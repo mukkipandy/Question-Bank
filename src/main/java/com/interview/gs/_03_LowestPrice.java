@@ -30,170 +30,175 @@ the least price of the product during the interval.
 
 public class _03_LowestPrice {
 
-	private class Interval {
-		int startTime;
-		int endTime;
-		int price;
+  /**
+   * Execution entry point.
+   */
+  public static void main(String[] args) {
+    _03_LowestPrice lp = new _03_LowestPrice();
+    if (lp.doTestsPass()) {
+      System.out.println("All tests passed");
+    } else {
+      System.out.println("Tests failed");
+    }
+  }
 
-		Interval(int startTime, int endTime, int price) {
-			if (startTime >= endTime) {
-				throw new IllegalArgumentException("startTime greater than or equal to endTime for an interval");
-			} else if (startTime < 0 || endTime < 0 || price < 0) {
-				throw new IllegalArgumentException("vendor information has negative values");
-			}
+  private List<Interval> getLowestPrices(List<Interval> inputIntervals)
+      throws IllegalArgumentException {
+    if (inputIntervals == null || inputIntervals.size() == 0) {
+      throw new IllegalArgumentException("inputIntervals has 0 elements");
+    }
+    for (Interval inputInterval : inputIntervals) {
+      if (inputInterval == null) {
+        throw new IllegalArgumentException("inputIntervals has a NULL element");
+      }
+    }
 
-			this.startTime = startTime;
-			this.endTime = endTime;
-			this.price = price;
-		}
+    /*
+     * New Feature in Java 8, this may not work if older version of java is used,
+     * sort the list on the price, so that you could identify the period for lowest
+     * price
+     */
+    inputIntervals.sort(Comparator.comparing(Interval::getPrice));
 
-		public int getStartTime() {
-			return startTime;
-		}
+    Interval root = inputIntervals.get(0);
+    BinaryTree tree = new BinaryTree(root);
+    for (int i = 1; i < inputIntervals.size(); i++) {
+      tree.addNode(inputIntervals.get(i));
+    }
 
-		public int getEndTime() {
-			return endTime;
-		}
+    return tree.inOrder();
+  }
 
-		public int getPrice() {
-			return price;
-		}
+  /**
+   * Returns true if the tests pass. Otherwise, false.
+   * <p>
+   * Additional Test Cases: Input : ( 1, 20 13 ), ( 7, 10, 8 ), ( 3, 8, 15 ), ( 1, 5, 20 ) Output: (
+   * 1, 7, 13 ), ( 7, 10, 8 ), ( 10, 20, 13 )
+   * <p>
+   * Input : ( 7, 10, 8 ), ( 3, 8, 15 ), ( 1, 5, 20 ), ( 1, 20, 4 ) Output: ( 1, 20, 4 )
+   * <p>
+   * Input : ( 3, 6, 2 ), ( 1, 9, 3 ), ( 5, 8, 1 ) Output: ( 1, 3, 3 ), ( 3, 5, 2 ), ( 5, 8, 1 ), (
+   * 8, 9, 3 )
+   */
+  private boolean doTestsPass() {
+    try {
+      Interval[] sampleInput = {new Interval(1, 5, 20), new Interval(3, 8, 15),
+          new Interval(7, 10, 8)};
+      Interval[] expectedOutput = {new Interval(1, 3, 20), new Interval(3, 7, 15),
+          new Interval(7, 10, 8)};
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			}
-			if (!(o instanceof Interval)) {
-				return false;
-			}
-			Interval interval = (Interval) o;
-			return getStartTime() == interval.getStartTime() && getEndTime() == interval.getEndTime()
-					&& getPrice() == interval.getPrice();
-		}
+      List<Interval> inputList = new ArrayList<>(Arrays.asList(sampleInput));
+      List<Interval> expectedList = new ArrayList<>(Arrays.asList(expectedOutput));
 
-		@Override
-		public int hashCode() {
-			int result = getStartTime();
-			result = 31 * result + getEndTime();
-			result = 31 * result + getPrice();
-			return result;
-		}
-	}
+      return expectedList.equals(getLowestPrices(inputList));
+    } catch (IllegalArgumentException e) {
+      System.out.println(e.getMessage());
+    }
 
-	private class BinaryTree {
-		private Interval data;
-		private BinaryTree left;
-		private BinaryTree right;
+    return false;
+  }
 
-		BinaryTree(Interval data) {
-			this.data = data;
-			left = null;
-			right = null;
-		}
+  private class Interval {
 
-		void addNode(Interval interval) {
-			if (interval.getStartTime() < data.getStartTime()) {
-				Interval newInterval = new Interval(interval.getStartTime(),
-						Math.min(interval.getEndTime(), data.getStartTime()), interval.getPrice());
-				if (this.left != null) {
-					this.left.addNode(newInterval);
-				} else {
-					this.left = new BinaryTree(newInterval);
-				}
-			}
+    int startTime;
+    int endTime;
+    int price;
 
-			if (interval.getEndTime() > data.getEndTime()) {
-				Interval newInterval = new Interval(Math.max(interval.getStartTime(), data.getEndTime()),
-						interval.getEndTime(), interval.getPrice());
-				if (this.right != null) {
-					this.right.addNode(newInterval);
-				} else {
-					this.right = new BinaryTree(newInterval);
-				}
-			}
-		}
+    Interval(int startTime, int endTime, int price) {
+      if (startTime >= endTime) {
+        throw new IllegalArgumentException(
+            "startTime greater than or equal to endTime for an interval");
+      } else if (startTime < 0 || endTime < 0 || price < 0) {
+        throw new IllegalArgumentException("vendor information has negative values");
+      }
 
-		private void traverse(List<Interval> results) {
-			if (this.left != null) {
-				this.left.traverse(results);
-			}
-			results.add(this.data);
-			if (this.right != null) {
-				this.right.traverse(results);
-			}
-		}
+      this.startTime = startTime;
+      this.endTime = endTime;
+      this.price = price;
+    }
 
-		List<Interval> inOrder() {
-			List<Interval> results = new ArrayList<Interval>();
-			this.traverse(results);
-			return results;
-		}
-	}
+    public int getStartTime() {
+      return startTime;
+    }
 
-	private List<Interval> getLowestPrices(List<Interval> inputIntervals) throws IllegalArgumentException {
-		if (inputIntervals == null || inputIntervals.size() == 0) {
-			throw new IllegalArgumentException("inputIntervals has 0 elements");
-		}
-		for (Interval inputInterval : inputIntervals) {
-			if (inputInterval == null) {
-				throw new IllegalArgumentException("inputIntervals has a NULL element");
-			}
-		}
+    public int getEndTime() {
+      return endTime;
+    }
 
-		/*
-		 * New Feature in Java 8, this may not work if older version of java is used,
-		 * sort the list on the price, so that you could identify the period for lowest
-		 * price
-		 */
-		inputIntervals.sort(Comparator.comparing(Interval::getPrice));
+    public int getPrice() {
+      return price;
+    }
 
-		Interval root = inputIntervals.get(0);
-		BinaryTree tree = new BinaryTree(root);
-		for (int i = 1; i < inputIntervals.size(); i++) {
-			tree.addNode(inputIntervals.get(i));
-		}
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof Interval)) {
+        return false;
+      }
+      Interval interval = (Interval) o;
+      return getStartTime() == interval.getStartTime() && getEndTime() == interval.getEndTime()
+          && getPrice() == interval.getPrice();
+    }
 
-		return tree.inOrder();
-	}
+    @Override
+    public int hashCode() {
+      int result = getStartTime();
+      result = 31 * result + getEndTime();
+      result = 31 * result + getPrice();
+      return result;
+    }
+  }
 
-	/**
-	 * Returns true if the tests pass. Otherwise, false.
-	 *
-	 * Additional Test Cases: Input : ( 1, 20 13 ), ( 7, 10, 8 ), ( 3, 8, 15 ), ( 1,
-	 * 5, 20 ) Output: ( 1, 7, 13 ), ( 7, 10, 8 ), ( 10, 20, 13 )
-	 *
-	 * Input : ( 7, 10, 8 ), ( 3, 8, 15 ), ( 1, 5, 20 ), ( 1, 20, 4 ) Output: ( 1,
-	 * 20, 4 )
-	 *
-	 * Input : ( 3, 6, 2 ), ( 1, 9, 3 ), ( 5, 8, 1 ) Output: ( 1, 3, 3 ), ( 3, 5, 2
-	 * ), ( 5, 8, 1 ), ( 8, 9, 3 )
-	 */
-	private boolean doTestsPass() {
-		try {
-			Interval[] sampleInput = { new Interval(1, 5, 20), new Interval(3, 8, 15), new Interval(7, 10, 8) };
-			Interval[] expectedOutput = { new Interval(1, 3, 20), new Interval(3, 7, 15), new Interval(7, 10, 8) };
+  private class BinaryTree {
 
-			List<Interval> inputList = new ArrayList<>(Arrays.asList(sampleInput));
-			List<Interval> expectedList = new ArrayList<>(Arrays.asList(expectedOutput));
+    private Interval data;
+    private BinaryTree left;
+    private BinaryTree right;
 
-			return expectedList.equals(getLowestPrices(inputList));
-		} catch (IllegalArgumentException e) {
-			System.out.println(e.getMessage());
-		}
+    BinaryTree(Interval data) {
+      this.data = data;
+      left = null;
+      right = null;
+    }
 
-		return false;
-	}
+    void addNode(Interval interval) {
+      if (interval.getStartTime() < data.getStartTime()) {
+        Interval newInterval = new Interval(interval.getStartTime(),
+            Math.min(interval.getEndTime(), data.getStartTime()), interval.getPrice());
+        if (this.left != null) {
+          this.left.addNode(newInterval);
+        } else {
+          this.left = new BinaryTree(newInterval);
+        }
+      }
 
-	/**
-	 * Execution entry point.
-	 */
-	public static void main(String[] args) {
-		_03_LowestPrice lp = new _03_LowestPrice();
-		if (lp.doTestsPass()) {
-			System.out.println("All tests passed");
-		} else {
-			System.out.println("Tests failed");
-		}
-	}
+      if (interval.getEndTime() > data.getEndTime()) {
+        Interval newInterval = new Interval(Math.max(interval.getStartTime(), data.getEndTime()),
+            interval.getEndTime(), interval.getPrice());
+        if (this.right != null) {
+          this.right.addNode(newInterval);
+        } else {
+          this.right = new BinaryTree(newInterval);
+        }
+      }
+    }
+
+    private void traverse(List<Interval> results) {
+      if (this.left != null) {
+        this.left.traverse(results);
+      }
+      results.add(this.data);
+      if (this.right != null) {
+        this.right.traverse(results);
+      }
+    }
+
+    List<Interval> inOrder() {
+      List<Interval> results = new ArrayList<Interval>();
+      this.traverse(results);
+      return results;
+    }
+  }
 }

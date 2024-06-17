@@ -33,67 +33,71 @@ returns the probability a knight remains on the board
 as described above.
 */
 public class _02_KnightProbability {
-	/**
-	 * TODO: Implement Me!
-	 */
-	public static double probability(int row, int column, int steps) {
-		int[][] moves = { { -2, -1 }, { -2, 1 }, { -1, -2 }, { -1, 2 }, { 1, -2 }, { 1, 2 }, { 2, -1 }, { 2, 1 } };
-		int boardSize = 8;
-		double[][] board = new double[boardSize][boardSize];
-		board[row][column] = 1.0;
 
-		double[][] curBoard;
-		for (int i = 0; i < steps; i++) {
-			curBoard = board;
-			board = new double[boardSize][boardSize];
+  /**
+   * TODO: Implement Me!
+   */
+  public static double probability(int row, int column, int steps) {
+    int[][] moves = {{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}, {2, -1}, {2, 1}};
+    int boardSize = 8;
+    double[][] board = new double[boardSize][boardSize];
+    board[row][column] = 1.0;
 
-			for (int x = 0; x < boardSize; x++) {
-				for (int y = 0; y < boardSize; y++) {
-					if (curBoard[x][y] == 0.0)
-						continue;
+    double[][] curBoard;
+    for (int i = 0; i < steps; i++) {
+      curBoard = board;
+      board = new double[boardSize][boardSize];
 
-					for (int[] dir : moves) {
-						int nextRow = x + dir[0];
-						int nextCol = y + dir[1];
+      for (int x = 0; x < boardSize; x++) {
+        for (int y = 0; y < boardSize; y++) {
+          if (curBoard[x][y] == 0.0) {
+            continue;
+          }
 
-						if (nextRow >= 0 && nextRow < boardSize && nextCol >= 0 && nextCol < boardSize) {
-							board[nextRow][nextCol] += curBoard[x][y] / 8.0;
-						}
-					}
-				}
-			}
-		}
+          for (int[] dir : moves) {
+            int nextRow = x + dir[0];
+            int nextCol = y + dir[1];
 
-		double total = 0.0;
-		for (int r = 0; r < boardSize; r++)
-			for (int c = 0; c < boardSize; c++)
-				total += board[r][c];
+            if (nextRow >= 0 && nextRow < boardSize && nextCol >= 0 && nextCol < boardSize) {
+              board[nextRow][nextCol] += curBoard[x][y] / 8.0;
+            }
+          }
+        }
+      }
+    }
 
-		return total;
-	}
+    double total = 0.0;
+    for (int r = 0; r < boardSize; r++) {
+      for (int c = 0; c < boardSize; c++) {
+        total += board[r][c];
+      }
+    }
 
-	public static boolean doTestsPass() {
-		// TODO: please feel free to make testing more elegant
-		boolean result = true;
-		// Start in a corner, no moves
-		//result = result && probability(0, 0, 0) == 1.0;
-		// Start in the middle, one move
-		result = result && probability(3, 3, 1) == 1.0;
-		// Start in a corner, one move
-		result = result && probability(0, 0, 1) == 0.25;
-		result = result && probability(0, 0, 2) == 0.1875;
-		result = result && probability(1, 2, 10) == 0.0522148497402668;
-		return result;
-	}
+    return total;
+  }
 
-	/**
-	 * Execution entry point
-	 */
-	public static void main(String[] args) {
-		if (doTestsPass()) {
-			System.out.println("All tests pass");
-		} else {
-			System.out.println("There are test failures");
-		}
-	}
+  public static boolean doTestsPass() {
+    // TODO: please feel free to make testing more elegant
+    boolean result = true;
+    // Start in a corner, no moves
+    //result = result && probability(0, 0, 0) == 1.0;
+    // Start in the middle, one move
+    result = result && probability(3, 3, 1) == 1.0;
+    // Start in a corner, one move
+    result = result && probability(0, 0, 1) == 0.25;
+    result = result && probability(0, 0, 2) == 0.1875;
+    result = result && probability(1, 2, 10) == 0.0522148497402668;
+    return result;
+  }
+
+  /**
+   * Execution entry point
+   */
+  public static void main(String[] args) {
+    if (doTestsPass()) {
+      System.out.println("All tests pass");
+    } else {
+      System.out.println("There are test failures");
+    }
+  }
 }

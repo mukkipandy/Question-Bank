@@ -38,32 +38,33 @@ row	0   1   2   3   4   5   6
 **
 */
 public class _13_PascalTriangle {
-	
 
-	private static HashMap<List<Integer>, Integer> pascalVal = new HashMap<>();
 
-	public static int pascal(int col, int row) {
-		List<Integer> p = new ArrayList<>();
-		p.add(row);
-		p.add(col);
-		if (!pascalVal.containsKey(p)) {
-			System.out.println(col + " " + row);
+  private static HashMap<List<Integer>, Integer> pascalVal = new HashMap<>();
 
-			if (row == 0 || row == col || col == 0) {
-				pascalVal.put(p, 1);
-			} else {
-				pascalVal.put(p, pascal(col, row - 1) + pascal(col - 1, row - 1));
-			}
-		}
-		return pascalVal.get(p);
-	}
+  public static int pascal(int col, int row) {
+    List<Integer> p = new ArrayList<>();
+    p.add(row);
+    p.add(col);
+    if (!pascalVal.containsKey(p)) {
+      System.out.println(col + " " + row);
 
-	public static void main(String[] args) {
-		if (pascal(0, 0) == 1 && pascal(1, 2) == 2 && pascal(5, 6) == 6 && pascal(4, 8) == 70 && pascal(6, 6) == 1) {
-			System.out.println("Pass");
-		} else {
-			System.out.println("Failed");
-		}
-	}
+      if (row == 0 || row == col || col == 0) {
+        pascalVal.put(p, 1);
+      } else {
+        pascalVal.put(p, pascal(col, row - 1) + pascal(col - 1, row - 1));
+      }
+    }
+    return pascalVal.get(p);
+  }
+
+  public static void main(String[] args) {
+    if (pascal(0, 0) == 1 && pascal(1, 2) == 2 && pascal(5, 6) == 6 && pascal(4, 8) == 70
+        && pascal(6, 6) == 1) {
+      System.out.println("Pass");
+    } else {
+      System.out.println("Failed");
+    }
+  }
 
 }

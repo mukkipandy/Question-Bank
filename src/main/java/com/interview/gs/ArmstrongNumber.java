@@ -3,42 +3,42 @@ package com.interview.gs;
 import java.util.Scanner;
 
 public class ArmstrongNumber {
-	
-	public static void main(String[] args) {
-		Scanner scanner = new Scanner(System.in);
-		System.out.print("Enter a number: ");
-		int number = scanner.nextInt();
-		scanner.close();
 
-		if (isArmstrong(number)) {
-			System.out.println(number + " is an Armstrong number.");
-		} else {
-			System.out.println(number + " is not an Armstrong number.");
-		}
-	}
+  public static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in);
+    System.out.print("Enter a number: ");
+    int number = scanner.nextInt();
+    scanner.close();
 
-	// Function to check if a number is an Armstrong number
-	public static boolean isArmstrong(int num) {
-		int originalNumber = num;
-		int numDigits = countDigits(num);
-		int sum = 0;
+    if (isArmstrong(number)) {
+      System.out.println(number + " is an Armstrong number.");
+    } else {
+      System.out.println(number + " is not an Armstrong number.");
+    }
+  }
 
-		while (num != 0) {
-			int digit = num % 10;
-			sum += Math.pow(digit, numDigits);
-			num /= 10;
-		}
+  // Function to check if a number is an Armstrong number
+  public static boolean isArmstrong(int num) {
+    int originalNumber = num;
+    int numDigits = countDigits(num);
+    int sum = 0;
 
-		return sum == originalNumber;
-	}
+    while (num != 0) {
+      int digit = num % 10;
+      sum += Math.pow(digit, numDigits);
+      num /= 10;
+    }
 
-	// Function to count the number of digits in a number
-	public static int countDigits(int num) {
-		int count = 0;
-		while (num != 0) {
-			num /= 10;
-			count++;
-		}
-		return count;
-	}
+    return sum == originalNumber;
+  }
+
+  // Function to count the number of digits in a number
+  public static int countDigits(int num) {
+    int count = 0;
+    while (num != 0) {
+      num /= 10;
+      count++;
+    }
+    return count;
+  }
 }

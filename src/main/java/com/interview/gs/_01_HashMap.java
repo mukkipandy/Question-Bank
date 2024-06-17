@@ -6,117 +6,121 @@ import java.util.List;
 
 public class _01_HashMap {
 
-	/**
-	 * class MyHashMap
-	 *
-	 * Associates a key-value pair in memory such that lookups and inserts can be
-	 * performed in O(1) time for a reasonably small set of data, and scales
-	 * linearly (at worst) for larger sets of key-value pairs.
-	 *
-	 * Each unique key is associated with one single value.
-	 */
-	private static class MyHashMap<K, V> {
-		private static class Entry<K, V> {
-			private final K key;
-			private V value;
+  /**
+   * bool doTestsPass() Runs various tests.
+   */
+  public static void doTestsPass() {
+    // todo: implement more tests, please
+    // feel free to make testing more elegant
+    int[][] testCases = {{1, 2}, {3, 4}, {5, 6}, {1, 7}, {1, 8}};
+    boolean passed = true;
 
-			Entry(K key, V value) {
-				this.key = key;
-				this.value = value;
-			}
-		}
+    MyHashMap<Integer, Integer> map = new MyHashMap<>();
 
-		List<List<Entry<K, V>>> entries;
+    for (int[] test : testCases) {
+      Integer key = test[0];
+      Integer value = test[1];
+      map.put(key, value);
 
-		MyHashMap() {
-			this.entries = new ArrayList<>();
-			// start with 10
-			for (int i = 0; i < 10; ++i) {
-				// pre-populate the list
-				this.entries.add(new LinkedList<>());
-			}
-		}
+      if (!value.equals(map.get(key))) {
+        System.out.println("Test failed [" + key + "," + value + "]");
+        passed = false;
+      }
+    }
 
-		void put(K key, V value) {
-			if (key == null || value == null) {
-				return;
-			}
-			int idx = key.hashCode() % entries.size();
+    MyHashMap<String, String> strMap = new MyHashMap<>();
+    String strTestCases[][] = {{"one", "two"}, {"three", "four"}, {"one", "five"}};
 
-			List<Entry<K, V>> list = this.entries.get(idx);
+    for (String[] test : strTestCases) {
+      String key = test[0];
+      String value = test[1];
+      strMap.put(key, value);
+      if (!value.equals(strMap.get(key))) {
+        System.out.println("Test failed [" + key + "," + value + "]");
+        passed = false;
+      }
+    }
 
-			for (Entry<K, V> i : list) {
-				if (key.equals(i.key)) {
-					i.value = value;
-					return;
-				}
-			}
+    if (passed) {
+      System.out.println("All tested passed");
+    }
 
-			list.add(new Entry<>(key, value));
-		}
+  }
 
-		V get(K key) {
-			if (key == null) {
-				return null;
-			}
-			int idx = key.hashCode() % entries.size();
-			List<Entry<K, V>> list = this.entries.get(idx);
+  /**
+   * Execution entry point.
+   */
+  public static void main(String args[]) {
+    doTestsPass();
+  }
 
-			for (Entry<K, V> i : list) {
-				if (key.equals(i.key)) {
-					return i.value;
-				}
-			}
+  ;
 
-			return null;
-		}
-	}
+  /**
+   * class MyHashMap
+   * <p>
+   * Associates a key-value pair in memory such that lookups and inserts can be performed in O(1)
+   * time for a reasonably small set of data, and scales linearly (at worst) for larger sets of
+   * key-value pairs.
+   * <p>
+   * Each unique key is associated with one single value.
+   */
+  private static class MyHashMap<K, V> {
 
-	/**
-	 * bool doTestsPass() Runs various tests.
-	 */
-	public static void doTestsPass() {
-		// todo: implement more tests, please
-		// feel free to make testing more elegant
-		int[][] testCases = { { 1, 2 }, { 3, 4 }, { 5, 6 }, { 1, 7 }, { 1, 8 } };
-		boolean passed = true;
+    List<List<Entry<K, V>>> entries;
 
-		MyHashMap<Integer, Integer> map = new MyHashMap<>();
+    MyHashMap() {
+      this.entries = new ArrayList<>();
+      // start with 10
+      for (int i = 0; i < 10; ++i) {
+        // pre-populate the list
+        this.entries.add(new LinkedList<>());
+      }
+    }
 
-		for (int[] test : testCases) {
-			Integer key = test[0];
-			Integer value = test[1];
-			map.put(key, value);
+    void put(K key, V value) {
+      if (key == null || value == null) {
+        return;
+      }
+      int idx = key.hashCode() % entries.size();
 
-			if (!value.equals(map.get(key))) {
-				System.out.println("Test failed [" + key + "," + value + "]");
-				passed = false;
-			}
-		}
+      List<Entry<K, V>> list = this.entries.get(idx);
 
-		MyHashMap<String, String> strMap = new MyHashMap<>();
-		String strTestCases[][] = { { "one", "two" }, { "three", "four" }, { "one", "five" } };
+      for (Entry<K, V> i : list) {
+        if (key.equals(i.key)) {
+          i.value = value;
+          return;
+        }
+      }
 
-		for (String[] test : strTestCases) {
-			String key = test[0];
-			String value = test[1];
-			strMap.put(key, value);
-			if (!value.equals(strMap.get(key))) {
-				System.out.println("Test failed [" + key + "," + value + "]");
-				passed = false;
-			}
-		}
+      list.add(new Entry<>(key, value));
+    }
 
-		if (passed) {
-			System.out.println("All tested passed");
-		}
+    V get(K key) {
+      if (key == null) {
+        return null;
+      }
+      int idx = key.hashCode() % entries.size();
+      List<Entry<K, V>> list = this.entries.get(idx);
 
-	};
+      for (Entry<K, V> i : list) {
+        if (key.equals(i.key)) {
+          return i.value;
+        }
+      }
 
-	/**
-	 * Execution entry point.
-	 */
-	public static void main(String args[]) {
-		doTestsPass();
-	}
+      return null;
+    }
+
+    private static class Entry<K, V> {
+
+      private final K key;
+      private V value;
+
+      Entry(K key, V value) {
+        this.key = key;
+        this.value = value;
+      }
+    }
+  }
 }

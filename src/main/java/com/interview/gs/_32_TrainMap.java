@@ -11,8 +11,8 @@ import java.util.Queue;
 
 
 /**
- * Implement def shortestPath(self, fromStationName, toStationName)
- * method to find shortest path between 2 stations
+ * Implement def shortestPath(self, fromStationName, toStationName) method to find shortest path
+ * between 2 stations
  */
 
 /*
@@ -30,184 +30,192 @@ import java.util.Queue;
  */
 public class _32_TrainMap {
 
-	/**
-	 * class Station
-	 * <p>
-	 * Respresents Station in the rail network. Each station is identified by unique
-	 * name. Station is connected with other stations - this information is stored
-	 * in the 'neighbours' field. Two station objects with the same name are equal
-	 * therefore they are considered to be same station.
-	 */
-	private static class Station {
-		private String name;
-		private List<Station> neighbours;
+  public static boolean doTestsPass() {
+    // todo: implement more tests, please
+    // feel free to make testing more elegant
+    TrainMap trainMap = new TrainMap();
 
-		public Station(String name) {
-			this.name = name;
-			this.neighbours = new ArrayList<>(3);
-		}
+    trainMap.addStation("King's Cross St Pancras").addStation("Angel").addStation("Old Street")
+        .addStation("Moorgate").addStation("Farringdon").addStation("Barbican")
+        .addStation("Russel Square")
+        .addStation("Holborn").addStation("Chancery Lane").addStation("St Paul's")
+        .addStation("Bank");
 
-		String getName() {
-			return name;
-		}
+    trainMap.connectStations(trainMap.getStation("King's Cross St Pancras"),
+            trainMap.getStation("Angel"))
+        .connectStations(trainMap.getStation("King's Cross St Pancras"),
+            trainMap.getStation("Farringdon"))
+        .connectStations(trainMap.getStation("King's Cross St Pancras"),
+            trainMap.getStation("Russel Square"))
+        .connectStations(trainMap.getStation("Russel Square"), trainMap.getStation("Holborn"))
+        .connectStations(trainMap.getStation("Holborn"), trainMap.getStation("Chancery Lane"))
+        .connectStations(trainMap.getStation("Chancery Lane"), trainMap.getStation("St Paul's"))
+        .connectStations(trainMap.getStation("St Paul's"), trainMap.getStation("Bank"))
+        .connectStations(trainMap.getStation("Angel"), trainMap.getStation("Old Street"))
+        .connectStations(trainMap.getStation("Old Street"), trainMap.getStation("Moorgate"))
+        .connectStations(trainMap.getStation("Moorgate"), trainMap.getStation("Bank"))
+        .connectStations(trainMap.getStation("Farringdon"), trainMap.getStation("Barbican"))
+        .connectStations(trainMap.getStation("Barbican"), trainMap.getStation("Moorgate"));
 
-		void addNeighbour(Station v) {
-			this.neighbours.add(v);
-		}
+    String solution = "King's Cross St Pancras->Russel Square->Holborn->Chancery Lane->St Paul's";
 
-		List<Station> getNeighbours() {
-			return this.neighbours;
-		}
+    return solution.equals(TrainMap
+        .convertPathToStringRepresentation(
+            trainMap.shortestPath("King's Cross St Pancras", "St Paul's")));
+  }
 
-		@Override
-		public boolean equals(Object obj) {
-			return obj instanceof Station && this.name.equals(((Station) obj).getName());
-		}
+  public static void main(String[] args) {
+    if (doTestsPass()) {
+      System.out.println("All tests pass");
+    } else {
+      System.out.println("Tests fail.");
+    }
+  }
 
-		@Override
-		public int hashCode() {
-			return Objects.hash(this.name);
-		}
-	}
+  /**
+   * class Station
+   * <p>
+   * Respresents Station in the rail network. Each station is identified by unique name. Station is
+   * connected with other stations - this information is stored in the 'neighbours' field. Two
+   * station objects with the same name are equal therefore they are considered to be same station.
+   */
+  private static class Station {
 
-	// added a class Node to store path
-	private static class Node {
-		Station station;
-		List<Station> path = new ArrayList<>();
+    private String name;
+    private List<Station> neighbours;
 
-		public Node(Station station) {
-			this.station = station;
-		}
+    public Station(String name) {
+      this.name = name;
+      this.neighbours = new ArrayList<>(3);
+    }
 
-		public Station getStation() {
-			return station;
-		}
+    String getName() {
+      return name;
+    }
 
-		public List<Station> getPath() {
-			return path;
-		}
-	}
+    void addNeighbour(Station v) {
+      this.neighbours.add(v);
+    }
 
-	/**
-	 * class TrainMap
-	 * <p>
-	 * Respresents whole rail network - consists of number of the Station objects.
-	 * Stations in the map are bi-directionally connected. Distance between any 2
-	 * stations is of same constant distance unit. This implies that shortest
-	 * distance between any 2 stations depends only on number of stations in between
-	 */
-	private static class TrainMap {
+    List<Station> getNeighbours() {
+      return this.neighbours;
+    }
 
-		private HashMap<String, Station> stations;
+    @Override
+    public boolean equals(Object obj) {
+      return obj instanceof Station && this.name.equals(((Station) obj).getName());
+    }
 
-		public TrainMap() {
-			this.stations = new HashMap<>();
-		}
+    @Override
+    public int hashCode() {
+      return Objects.hash(this.name);
+    }
+  }
 
-		public TrainMap addStation(String name) {
-			Station s = new Station(name);
-			this.stations.putIfAbsent(name, s);
-			return this;
-		}
+  // added a class Node to store path
+  private static class Node {
 
-		public Station getStation(String name) {
-			return this.stations.get(name);
-		}
+    Station station;
+    List<Station> path = new ArrayList<>();
 
-		public TrainMap connectStations(Station fromStation, Station toStation) {
-			if (fromStation == null) {
-				throw new IllegalArgumentException("From station is null");
-			}
-			if (toStation == null) {
-				throw new IllegalArgumentException("From station is null");
-			}
-			fromStation.addNeighbour(toStation);
-			toStation.addNeighbour(fromStation);
-			return this;
-		}
+    public Node(Station station) {
+      this.station = station;
+    }
 
-		public List<Station> shortestPath(String from, String to) {
-			/*
-			 * TODO Implement
-			 */
-			if (from.equals(to)) {
-				return Collections.emptyList();
-			}
-			HashSet<Node> isVisited = new HashSet<>();
-			// queue for bfs
-			Queue<Node> stationQueue = new LinkedList<>();
-			// add first element
-			Node newNode = new Node(stations.get(from));
-			newNode.getPath().add(stations.get(from));
-			stationQueue.add(newNode);
-			Node curNode = null;
-			// while loop for bfs
-			while (!stationQueue.isEmpty()) {
-				curNode = stationQueue.poll();
-				isVisited.add(curNode);
+    public Station getStation() {
+      return station;
+    }
 
-				// case: curStation if dest
-				if (curNode.getStation().getName().equals(to)) {
-					return curNode.getPath();
-				}
+    public List<Station> getPath() {
+      return path;
+    }
+  }
 
-				// case: is not dest
+  /**
+   * class TrainMap
+   * <p>
+   * Respresents whole rail network - consists of number of the Station objects. Stations in the map
+   * are bi-directionally connected. Distance between any 2 stations is of same constant distance
+   * unit. This implies that shortest distance between any 2 stations depends only on number of
+   * stations in between
+   */
+  private static class TrainMap {
 
-				// check and add neighbours
-				for (Station s : curNode.getStation().getNeighbours()) {
-					newNode = new Node(s);
-					if (!isVisited.contains(newNode)) {
-						stationQueue.add(newNode);
-						newNode.getPath().addAll(curNode.getPath());
-						newNode.getPath().add(s);
-					}
-				}
-			}
-			return Collections.emptyList();
-		}
+    private HashMap<String, Station> stations;
 
-		public static String convertPathToStringRepresentation(List<Station> path) {
-			if (path.isEmpty()) {
-				return "";
-			}
-			System.out.println(path.stream().map(Station::getName).reduce((s1, s2) -> s1 + "->" + s2).get());
-			return path.stream().map(Station::getName).reduce((s1, s2) -> s1 + "->" + s2).get();
-		}
-	}
+    public TrainMap() {
+      this.stations = new HashMap<>();
+    }
 
-	public static boolean doTestsPass() {
-		// todo: implement more tests, please
-		// feel free to make testing more elegant
-		TrainMap trainMap = new TrainMap();
+    public static String convertPathToStringRepresentation(List<Station> path) {
+      if (path.isEmpty()) {
+        return "";
+      }
+      System.out.println(
+          path.stream().map(Station::getName).reduce((s1, s2) -> s1 + "->" + s2).get());
+      return path.stream().map(Station::getName).reduce((s1, s2) -> s1 + "->" + s2).get();
+    }
 
-		trainMap.addStation("King's Cross St Pancras").addStation("Angel").addStation("Old Street")
-				.addStation("Moorgate").addStation("Farringdon").addStation("Barbican").addStation("Russel Square")
-				.addStation("Holborn").addStation("Chancery Lane").addStation("St Paul's").addStation("Bank");
+    public TrainMap addStation(String name) {
+      Station s = new Station(name);
+      this.stations.putIfAbsent(name, s);
+      return this;
+    }
 
-		trainMap.connectStations(trainMap.getStation("King's Cross St Pancras"), trainMap.getStation("Angel"))
-				.connectStations(trainMap.getStation("King's Cross St Pancras"), trainMap.getStation("Farringdon"))
-				.connectStations(trainMap.getStation("King's Cross St Pancras"), trainMap.getStation("Russel Square"))
-				.connectStations(trainMap.getStation("Russel Square"), trainMap.getStation("Holborn"))
-				.connectStations(trainMap.getStation("Holborn"), trainMap.getStation("Chancery Lane"))
-				.connectStations(trainMap.getStation("Chancery Lane"), trainMap.getStation("St Paul's"))
-				.connectStations(trainMap.getStation("St Paul's"), trainMap.getStation("Bank"))
-				.connectStations(trainMap.getStation("Angel"), trainMap.getStation("Old Street"))
-				.connectStations(trainMap.getStation("Old Street"), trainMap.getStation("Moorgate"))
-				.connectStations(trainMap.getStation("Moorgate"), trainMap.getStation("Bank"))
-				.connectStations(trainMap.getStation("Farringdon"), trainMap.getStation("Barbican"))
-				.connectStations(trainMap.getStation("Barbican"), trainMap.getStation("Moorgate"));
+    public Station getStation(String name) {
+      return this.stations.get(name);
+    }
 
-		String solution = "King's Cross St Pancras->Russel Square->Holborn->Chancery Lane->St Paul's";
+    public TrainMap connectStations(Station fromStation, Station toStation) {
+      if (fromStation == null) {
+        throw new IllegalArgumentException("From station is null");
+      }
+      if (toStation == null) {
+        throw new IllegalArgumentException("From station is null");
+      }
+      fromStation.addNeighbour(toStation);
+      toStation.addNeighbour(fromStation);
+      return this;
+    }
 
-		return solution.equals(TrainMap
-				.convertPathToStringRepresentation(trainMap.shortestPath("King's Cross St Pancras", "St Paul's")));
-	}
+    public List<Station> shortestPath(String from, String to) {
+      /*
+       * TODO Implement
+       */
+      if (from.equals(to)) {
+        return Collections.emptyList();
+      }
+      HashSet<Node> isVisited = new HashSet<>();
+      // queue for bfs
+      Queue<Node> stationQueue = new LinkedList<>();
+      // add first element
+      Node newNode = new Node(stations.get(from));
+      newNode.getPath().add(stations.get(from));
+      stationQueue.add(newNode);
+      Node curNode = null;
+      // while loop for bfs
+      while (!stationQueue.isEmpty()) {
+        curNode = stationQueue.poll();
+        isVisited.add(curNode);
 
-	public static void main(String[] args) {
-		if (doTestsPass()) {
-			System.out.println("All tests pass");
-		} else {
-			System.out.println("Tests fail.");
-		}
-	}
+        // case: curStation if dest
+        if (curNode.getStation().getName().equals(to)) {
+          return curNode.getPath();
+        }
+
+        // case: is not dest
+
+        // check and add neighbours
+        for (Station s : curNode.getStation().getNeighbours()) {
+          newNode = new Node(s);
+          if (!isVisited.contains(newNode)) {
+            stationQueue.add(newNode);
+            newNode.getPath().addAll(curNode.getPath());
+            newNode.getPath().add(s);
+          }
+        }
+      }
+      return Collections.emptyList();
+    }
+  }
 }
